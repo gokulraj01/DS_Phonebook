@@ -9,8 +9,8 @@
 #define PHONEBOOK_NAME "phonebook.txt"      //  Location of Phonebook File
 #define CREDITS "screens/credits.txt"       //  Location of Credit Screen
 #define CREDIT_DURATION 1                   //  Duration of Credit Splash Screen
-#define clrscr() printf("\e[1;1H\e[2J")     //  Location of Menu Screen
-#define MENU "screens/menu.txt"
+#define clrscr() printf("\e[1;1H\e[2J")     //  Macro Function to Clear Screen
+#define MENU "screens/menu.txt"             //  Location of Menu Screen
 
 // Structure to hold contact data
 struct Contact{
