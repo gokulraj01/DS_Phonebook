@@ -33,9 +33,9 @@ struct Node{
 };
 
 // Global variable to hold HEAD of parsed ContactList
-struct Node* CONTACT_LIST = NULL;
+struct Node* contactList = NULL;
 // Global variable to hold END of ContactList for easy concat
-struct Node* CONTACT_LIST_END = NULL;
+struct Node* contactListEnd = NULL;
 
 
 /** Function to query a string from user
@@ -62,9 +62,9 @@ char* input(char* msg){
 void displayAllContacts(struct Node* list){
     struct Node* current = list;
     int iter = 0;
-    printf("Name\t\tPhone\t\tEmail\n");
+    printf("Name\t\t\tPhone\t\tEmail\n");
     while(current != NULL){
-        printf("%s\t%s\t%s\n", current->data->name, current->data->phone, current->data->email);
+        printf("%s\t\t%s\t%s\n", current->data->name, current->data->phone, current->data->email);
         current = current->next;
         iter++;
     }
@@ -84,23 +84,23 @@ void addContact(char* name, char* phone, char* email){
     strcpy(newContact->email, email);
     newNode->data = newContact;
     // if empty list, add as 1st node
-    if(CONTACT_LIST_END == NULL)
-        CONTACT_LIST = newNode;
+    if(contactListEnd == NULL)
+        contactList = newNode;
     // else link to previous node
     else
-        CONTACT_LIST_END->next = newNode;
+        contactListEnd->next = newNode;
     // add reverse link
-    newNode->prev = CONTACT_LIST_END;
+    newNode->prev = contactListEnd;
     newNode->next = NULL;
 
-    CONTACT_LIST_END = newNode;
+    contactListEnd = newNode;
 }
 
 /** Parser to import formatted (CSV/TSV) PhoneBook files to memory as ContactList
  * @param filename Path to Phonebook file
  */
 void parsePhonebook(char* filename){
-    CONTACT_LIST = NULL;
+    contactList = NULL;
     FILE* pb = fopen(filename, "r");
     char buff[3][ARR_LEN];
     int buffInd = 0, buffPos = 0;
@@ -188,22 +188,33 @@ void userAddContact(){
 }
 
 void userDeleteContact(){
-    // TODO: implement Delete Contact for Menu option 2
+    // TODO: implement Delete Contact
     // Pending - Gokul PS
 }
 
 void userModifyContact(){
-    // TODO: implement contact modification menu for Menu option 3
+    // TODO: implement contact modification menu
     // Pending - Gokul PS
 }
 
+// Performs an in-place sort by Contact Name on ContactList
 void userSortContact(){
-    // TODO: implement Sort functionality for Menu option 4
-    // Pending - Gokul Raj
+    // Implements Selection Sort within Linked List
+    for(struct Node* i = contactList; i->next != NULL; i = i->next){
+        struct Node *min = i;
+        for(struct Node* j = i->next; j != NULL; j = j->next){
+            if(strcmp(min->data->name, j->data->name) > 0)
+                min = j;
+        }
+        struct Contact* t = i->data;
+        i->data = min->data;
+        min->data = t;
+    }
+    printf("Sort Done...\n");
 }
 
 void userSearchContact(){
-    // TODO: implement Search functionality
+    // TODO: implement Binary Search functionality
     // Pending - George
 }
 
@@ -232,7 +243,7 @@ void showMenu(){
                     userSearchContact();
                     break;
                 case 'L':
-                    displayAllContacts(CONTACT_LIST);
+                    displayAllContacts(contactList);
                     break;
                 case 'E':
                     userExit();
