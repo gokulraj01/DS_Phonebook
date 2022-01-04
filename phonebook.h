@@ -213,10 +213,57 @@ void userSortContact(){
     printf("Sort Done...\n");
 }
 
+//Function to search by name
+struct Node* nameSearch(char *key, struct Node* list){
+    struct Node* current = list;    
+        while(current != NULL){
+            if(strcmp(current->data->name,key) == 0 )
+            return current;
+            current = current->next;
+        }return NULL;
+ }
+
+//Function to search by phone number
+struct Node* phnoSearch(char *key, struct Node* list){
+    struct Node* current = list;   
+    while(current != NULL){
+        if(strcmp(current->data->phone,key) == 0 ) //strcmp returns 0 if strings are same
+         return current;
+        current = current->next;
+    } return NULL;
+ }
+
 void userSearchContact(){
-    // TODO: implement Binary Search functionality
-    // Pending - George
+  int choice; char key[ARR_LEN];int exit_choice;
+  do {
+    printf("To search by name press 1\nTo search by phone number press 2\nEnter your choice: ");
+    scanf("%d", &choice);
+    struct Node *namesrch;
+    char *key;
+    switch (choice){
+        case 1:
+            key = input("Enter the name to be searched");
+            namesrch = nameSearch(key, contactList);
+            break;
+        case 2:
+            key = input("Enter the phone number to be searched");
+            namesrch = phnoSearch(key, contactList);
+            break;
+    }
+    if(namesrch == NULL)
+        printf("No results..");
+    else{
+        printf("Details of searched employee\n");
+        printf("Name: %s\n", namesrch->data->name);
+        printf("Phone number: %s\n", namesrch->data->phone);
+        printf("Email: %s\n", namesrch->data->email);
+    }
+    printf("Press 1 to continue searching. Press any other number to exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &exit_choice);
+  } while (exit_choice == 1);
 }
+
 
 // Displays a Interactive Menu to interface with PhoneBook functions
 void showMenu(){
