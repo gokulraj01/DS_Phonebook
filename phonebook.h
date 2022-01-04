@@ -214,8 +214,7 @@ void userSortContact(){
 }
 
 //Function to search by name
-struct Node* search_by_name(char key[],struct Node* list){
-    
+struct Node* nameSearch(char *key, struct Node* list){
     struct Node* current = list;    
         while(current != NULL){
             if(strcmp(current->data->name,key) == 0 )
@@ -223,9 +222,9 @@ struct Node* search_by_name(char key[],struct Node* list){
             current = current->next;
         }return NULL;
  }
+
 //Function to search by phone number
-struct Node* search_by_phno(char key[],struct Node* list){
-     
+struct Node* phnoSearch(char *key, struct Node* list){
     struct Node* current = list;   
     while(current != NULL){
         if(strcmp(current->data->phone,key) == 0 ) //strcmp returns 0 if strings are same
@@ -236,56 +235,33 @@ struct Node* search_by_phno(char key[],struct Node* list){
 
 void userSearchContact(){
   int choice; char key[ARR_LEN];int exit_choice;
-    do{ printf("To search by name press 1\nTo search by phone number press 2\nEnter your choice: ");
-        scanf("%d",&choice);
-          switch(choice){
-            case 1:{  printf("Enter the name to be searched:\n");
-                     char* key = malloc(ARR_LEN);
-                     key[0] = '\n';   
-                     while(key[0] == '\n')  //Sometimes the string gets read as \n so reading till key is not \n
-                     fgets(key, ARR_LEN, stdin);
-                     unsigned int lenkey = 0;
-                     while(key[++lenkey] != '\0'); 
-                     key[lenkey-1] = '\0';   // Key may be read with \n at the end
-                     struct Node* namesrch = search_by_name(key,CONTACT_LIST);
-                     if(namesrch == NULL)
-                     printf("Element not found");
-                     else
-                     {
-                        printf("Details of searched employee\n");
-                        printf("Name: %s\n", namesrch->data->name);
-                        printf("Phone number: %s\n",namesrch->data->phone);
-                        printf("Email: %s\n",namesrch->data->email);
-                      }
-                        break;  
-                    }           
-             case 2:{
-                      printf("Enter the phone number to be searched:\n");
-                     char* key = malloc(ARR_LEN);
-                     key[0] = '\n';
-                     while(key[0] == '\n')
-                     fgets(key, ARR_LEN, stdin);
-                     unsigned int lenkey = 0;
-                     while(key[++lenkey] != '\0');
-                     key[lenkey-1] = '\0';
-                     struct Node* namesrch = search_by_phno(key,CONTACT_LIST);
-                     if(namesrch == NULL)
-                     printf("Element not found");
-                     else
-                     {
-                        printf("Details of searched employee\n");
-                        printf("Name: %s\n", namesrch->data->name);
-                        printf("Phone number: %s\n",namesrch->data->phone);
-                        printf("Email: %s\n",namesrch->data->email);
-                      }
-                        
-                        break;
-                    }
-                 }
-                        printf("Press 1 to continue searching. Press any other number to exit\n");
-                        printf("Enter your choice: ");
-                        scanf("%d",&exit_choice);
-    }while(exit_choice==1);
+  do {
+    printf("To search by name press 1\nTo search by phone number press 2\nEnter your choice: ");
+    scanf("%d", &choice);
+    struct Node *namesrch;
+    char *key;
+    switch (choice){
+        case 1:
+            key = input("Enter the name to be searched");
+            namesrch = nameSearch(key, contactList);
+            break;
+        case 2:
+            key = input("Enter the phone number to be searched");
+            namesrch = phnoSearch(key, contactList);
+            break;
+    }
+    if(namesrch == NULL)
+        printf("No results..");
+    else{
+        printf("Details of searched employee\n");
+        printf("Name: %s\n", namesrch->data->name);
+        printf("Phone number: %s\n", namesrch->data->phone);
+        printf("Email: %s\n", namesrch->data->email);
+    }
+    printf("Press 1 to continue searching. Press any other number to exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &exit_choice);
+  } while (exit_choice == 1);
 }
 
 
