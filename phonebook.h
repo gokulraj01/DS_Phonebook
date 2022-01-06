@@ -96,6 +96,50 @@ void addContact(char* name, char* phone, char* email){
     contactListEnd = newNode;
 }
 
+//Function to search by name
+struct Node* nameSearch(char *key, struct Node* list){
+    struct Node* current = list;    
+        while(current != NULL){
+            if(strcmp(current->data->name,key) == 0 )
+            return current;
+            current = current->next;
+        }return NULL;
+ }
+
+//Function to search by phone number
+struct Node* phnoSearch(char *key, struct Node* list){
+    struct Node* current = list;   
+    while(current != NULL){
+        if(strcmp(current->data->phone,key) == 0 ) //strcmp returns 0 if strings are same
+         return current;
+        current = current->next;
+    } return NULL;
+ }
+
+struct Node* searchContact() {
+    int choice;
+    printf(
+        "To search by name press 1\n"
+        "To search by phone number press 2\n"
+        "Enter your choice: "
+    );
+    scanf("%d", &choice);
+    struct Node *namesrch;
+    char *key;
+    switch (choice) {
+        case 1:
+            key = input("Enter the name to be searched");
+            namesrch = nameSearch(key, contactList);
+            break;
+        case 2:
+            key = input("Enter the phone number to be searched");
+            namesrch = phnoSearch(key, contactList);
+            break;
+    }
+
+    return namesrch;
+}
+
 /** Parser to import formatted (CSV/TSV) PhoneBook files to memory as ContactList
  * @param filename Path to Phonebook file
  */
@@ -213,43 +257,11 @@ void userSortContact(){
     printf("Sort Done...\n");
 }
 
-//Function to search by name
-struct Node* nameSearch(char *key, struct Node* list){
-    struct Node* current = list;    
-        while(current != NULL){
-            if(strcmp(current->data->name,key) == 0 )
-            return current;
-            current = current->next;
-        }return NULL;
- }
-
-//Function to search by phone number
-struct Node* phnoSearch(char *key, struct Node* list){
-    struct Node* current = list;   
-    while(current != NULL){
-        if(strcmp(current->data->phone,key) == 0 ) //strcmp returns 0 if strings are same
-         return current;
-        current = current->next;
-    } return NULL;
- }
-
 void userSearchContact(){
-  int choice; char key[ARR_LEN];int exit_choice;
+  int exit_choice;
   do {
-    printf("To search by name press 1\nTo search by phone number press 2\nEnter your choice: ");
-    scanf("%d", &choice);
     struct Node *namesrch;
-    char *key;
-    switch (choice){
-        case 1:
-            key = input("Enter the name to be searched");
-            namesrch = nameSearch(key, contactList);
-            break;
-        case 2:
-            key = input("Enter the phone number to be searched");
-            namesrch = phnoSearch(key, contactList);
-            break;
-    }
+    namesrch = searchContact();
     if(namesrch == NULL)
         printf("No results..");
     else{
