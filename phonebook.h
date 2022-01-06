@@ -96,6 +96,19 @@ void addContact(char* name, char* phone, char* email){
     contactListEnd = newNode;
 }
 
+void deleteContact(struct Node *node) {
+    if (node->prev == NULL) { // node is at beginning
+        node->next->prev = NULL;
+        contactList = node->next;
+    } else if (node->next == NULL) { // node is at end
+        node->prev->next = NULL;
+        contactListEnd = node->prev;
+    } else {
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+    }
+}
+
 //Function to search by name
 struct Node* nameSearch(char *key, struct Node* list){
     struct Node* current = list;    
@@ -232,8 +245,14 @@ void userAddContact(){
 }
 
 void userDeleteContact(){
-    // TODO: implement Delete Contact
-    // Pending - Gokul PS
+    struct Node *namesrch;
+    namesrch = searchContact();
+    if (namesrch == NULL) {
+        printf("No results..");
+        return;
+    }
+    deleteContact(namesrch);
+    printf("Contact deleted successfully....\n");
 }
 
 void userModifyContact(){
