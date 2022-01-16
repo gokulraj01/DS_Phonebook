@@ -11,6 +11,7 @@
 #define CREDIT_DURATION 1               //  Duration of Credit Splash Screen
 #define clrscr() printf("\e[1;1H\e[2J") //  Macro Function to Clear Screen
 #define MENU "screens/menu.txt"         //  Location of Menu Screen
+#define SEARCH "screens/Search_Menu.txt"    //  Location of Search Screen
 
 // Structure to hold contact data
 struct Contact {
@@ -59,6 +60,17 @@ char *input(char *msg) {
 /** Dumps passed ContactList data formatted as a table to console.
  * @param list HEAD of linked list holding ContactList
  */
+void printFile(char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (f == NULL) {
+        printf("Internal Error: Unable to open Screen File\n");
+        return;
+    }
+    while (!feof(f))
+        fputc(fgetc(f), stdout);
+    fclose(f);
+}
+
 void displayAllContacts(struct Node *list) {
     struct Node *current = list;
     int iter = 0;
@@ -135,24 +147,44 @@ struct Node *phnoSearch(char *key, struct Node *list) {
 
 struct Node *searchContact() {
     int choice;
-    printf("To search by name press 1\n"
-           "To search by phone number press 2\n"
-           "Enter your choice: ");
+   clrscr();
+    printFile(SEARCH);
     scanf("%d", &choice);
     struct Node *namesrch;
     char *key;
     switch (choice) {
     case 1:
-        key = input("Enter the name to be searched");
+        key = input("\nEnter the name to be searched");
         namesrch = nameSearch(key, contactList);
         break;
     case 2:
-        key = input("Enter the phone number to be searched");
+        key = input("\nEnter the phone number to be searched");
         namesrch = phnoSearch(key, contactList);
         break;
     }
 
     return namesrch;
+}
+
+void userSearchContact() {
+    int exit_choice;
+    do {
+        struct Node *namesrch;
+        namesrch = searchContact();
+        if (namesrch == NULL)
+            printf("\nNo results..");
+        else {
+            printf("\nDetails of searched employee\n");
+            printf("Name: %s\n", namesrch->data->name);
+            printf("Phone number: %s\n", namesrch->data->phone);
+            printf("Email: %s\n", namesrch->data->email);
+        }
+        
+        printf("\nPress 1 to continue searching. Press any other number to exit\n");
+        printf("\nEnter your choice: ");
+        scanf("%d", &exit_choice);
+    } while (exit_choice == 1);
+    
 }
 
 /** Parser to import formatted (CSV/TSV) PhoneBook files to memory as
@@ -187,16 +219,7 @@ void parsePhonebook(char *filename) {
 /** Internal method to display a file content as is to console
  * @param filename Path to file to be displayed
  */
-void printFile(char *filename) {
-    FILE *f = fopen(filename, "r");
-    if (f == NULL) {
-        printf("Internal Error: Unable to open Screen File\n");
-        return;
-    }
-    while (!feof(f))
-        fputc(fgetc(f), stdout);
-    fclose(f);
-}
+
 
 // Displays credits splash screen
 void showCredits() {
@@ -277,26 +300,6 @@ void userSortContact() {
         min->data = t;
     }
     printf("Sort Done...\n");
-}
-
-void userSearchContact() {
-    int exit_choice;
-    do {
-        struct Node *namesrch;
-        namesrch = searchContact();
-        if (namesrch == NULL)
-            printf("No results..");
-        else {
-            printf("Details of searched employee\n");
-            printf("Name: %s\n", namesrch->data->name);
-            printf("Phone number: %s\n", namesrch->data->phone);
-            printf("Email: %s\n", namesrch->data->email);
-        }
-        printf(
-            "Press 1 to continue searching. Press any other number to exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &exit_choice);
-    } while (exit_choice == 1);
 }
 
 // Displays a Interactive Menu to interface with PhoneBook functions
