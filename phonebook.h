@@ -3,14 +3,15 @@
 #include <string.h>
 #include <unistd.h>
 
-#define ARR_LEN 256            //  Fixed Length for Arrays
-#define CONTACT_DELIMITER '\n' //  Delemiter to split between contacts
-#define ITEM_DELIMITER '\t'    //  Delimiter to split items within a contact
+#define ARR_LEN 256                     //  Fixed Length for Arrays
+#define CONTACT_DELIMITER '\n'          //  Delemiter to split between contacts
+#define ITEM_DELIMITER '\t'             //  Delimiter to split items within a contact
 #define PHONEBOOK_NAME "phonebook.txt"  //  Location of Phonebook File
 #define CREDITS "screens/credits.txt"   //  Location of Credit Screen
 #define CREDIT_DURATION 1               //  Duration of Credit Splash Screen
 #define clrscr() printf("\e[1;1H\e[2J") //  Macro Function to Clear Screen
 #define MENU "screens/menu.txt"         //  Location of Menu Screen
+#define STR_FIND_MODE 0                   //  Search Mode for strfind
 
 // Structure to hold contact data
 struct Contact {
@@ -54,6 +55,31 @@ char *input(char *msg) {
         ;
     op[len - 1] = '\0';
     return op;
+}
+
+/** Checks key exist inside given string. 
+ * @param str String to search inside
+ * @param key Substring to match
+ * @param mode Search Modes:
+ * [0] Scattered Match. Only checks if letters appear in order.
+ * [1] Adjacent Match. Checks if letters appear in order, and are adjacent.
+ * @return 1 if match found, else 0
+ */
+int strfind(char *str, char *key, int mode){
+    int keyLen = 0;
+    while(key[++keyLen] != '\0');
+    int i_str = 0, i_key = 0;
+    while(str[i_str] != '\0'){
+        if(str[i_str++] == key[i_key]){
+            i_key++;
+        }
+        else if(mode)
+            i_key = 0;
+        if(i_key == keyLen){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 /** Dumps passed ContactList data formatted as a table to console.
@@ -114,30 +140,55 @@ void deleteContact(struct Node *node) {
 
 struct Node *searchContact() {
     clrscr();
-    int choice;
+    int choice, n = 2;
+    struct Node *p, *result;
     printf("Search Modes\n"
            "[1] By Name\t[2] By PhoneNo\t[3] By Email\n"
            "Enter your choice: ");
     scanf("%d", &choice);
-    char *key;
-    struct Node *result;
-    switch (choice) {
-    case 1:
-        key = input("Enter Name to search: ");
-        for(result=contactList; (strcmp(result->data->name, key) != 0 && result != NULL); result=result->next);
-        break;
-    case 2:
-        key = input("Enter PhoneNo to search: ");
-        for(result=contactList; strcmp(result->data->phone, key) != 0 && result != NULL; result=result->next);
-        break;
-    case 3:
-        key = input("Enter Email to search: ");
-        for(result=contactList; strcmp(result->data->email, key) != 0 && result != NULL; result=result->next);
-        break;
-    default:
-        result = NULL;
+    while(n > 1){
+        char *str;
+        char *key = input("Query");
+        printf("MATCHES: ");
+        n = 0;
+        switch (choice) {
+            case 1:
+                for(p=contactList; p != NULL; p=p->next){
+                    str = p->data->name;
+                    if(strfind(str, key, STR_FIND_MODE) == 1){
+                        n++;
+                        result = p;
+                        printf("%s, ", str);
+                    }
+                }
+                break;
+            case 2:
+                for(p=contactList; p != NULL; p=p->next){
+                    str = p->data->phone;
+                    if(strfind(str, key, STR_FIND_MODE) == 1){
+                        n++;
+                        result = p;
+                        printf("%s, ", str);
+                    }
+                }
+                break;
+            case 3:
+                for(p=contactList; p != NULL; p=p->next){
+                    str = p->data->email;
+                    if(strfind(str, key, STR_FIND_MODE) == 1){
+                        n++;
+                        result = p;
+                        printf("%s, ", str);
+                    }
+                }
+                break;
+        }
+        printf("\nFound %d matches...\n", n);
     }
-    return result;
+    if(n == 1)
+        return result;
+    else
+        return NULL;
 }
 
 /** Parser to import formatted (CSV/TSV) PhoneBook files to memory as
@@ -214,11 +265,12 @@ void userExit() {
 
 // Waits for user interaction before continuing
 void waitKey() {
-    printf("Enter 'M' for Menu.....");
-    char c = '\n';
-    while (c == '\n') {
+    printf("Press 'Enter' for Menu.....");
+    char c = '\0';
+    while (c == '\0') {
+        fflush(stdin);
         scanf("%c", &c);
-        if (c == 'M') {
+        if (c == '\n') {
             clrscr();
             return;
         }
@@ -240,19 +292,62 @@ void userAddContact() {
 }
 
 void userDeleteContact() {
-    struct Node *namesrch;
-    namesrch = searchContact();
-    if (namesrch == NULL) {
-        printf("No results..");
+    struct Node *result = searchContact();
+    if (result == NULL) {
+        printf("NO RESULTS FOUND..\n");
         return;
     }
-    deleteContact(namesrch);
-    printf("Contact deleted successfully....\n");
+    printf("Are you sure you want to delete [%s]? [Y/N]: ", result->data->name);
+    char c = '\0';
+    while (c == '\0') {
+        fflush(stdin);
+        scanf("%c", &c);
+        if (c == 'Y' || c == 'y'){
+            deleteContact(result);
+            printf("Contact deleted successfully....\n");
+        }
+        else
+            printf("Operation Aborted by User...\n");
+    }
 }
 
 void userModifyContact() {
-    // TODO: implement contact modification menu
-    // Pending - Gokul PS
+    struct Node *result = searchContact();
+    int edit = 1;
+    if(result == NULL){
+        printf("NO RESULTS FOUND....\n");
+        return;
+    }
+    printf("Edit Menu\n"
+           "---------\n");
+    printf("CHOSEN CONTACT: %s, %s, %s\n\n", result->data->name, result->data->phone, result->data->email);
+    printf("Choose what to edit..\n"
+           "[1] Name\t[2] Phone\t[3] Email\t[4] EXIT\n");
+    while(edit){
+        int opt = -1;
+        printf("Choice: ");
+        scanf("%d", &opt);
+        char *newData;
+        switch(opt){
+            case 1:
+                strcpy(result->data->name, input("New Name"));
+                printf("Name edit successful...\n");
+                break;
+            case 2:
+                strcpy(result->data->phone, input("New Phone"));
+                printf("Phone edit successful...\n");
+                break;
+            case 3:
+                strcpy(result->data->email, input("New Email"));
+                printf("Email edit successful...\n");
+                break;
+            case 4:
+                edit = 0;
+                break;
+            default:
+                printf("Invalid Choice...");
+        }
+    }
 }
 
 // Performs an in-place sort by Contact Name on ContactList
@@ -277,15 +372,16 @@ void userSearchContact() {
         struct Node *result;
         result = searchContact();
         if (result == NULL)
-            printf("No results..");
+            printf("NO RESULTS FOUND..\n");
         else {
-            printf("Result\n");
-            printf("Name: %s\n", result->data->name);
-            printf("Phone number: %s\n", result->data->phone);
-            printf("Email: %s\n", result->data->email);
+            clrscr();
+            printf("Search Result\n");
+            printf("NAME : %s\n", result->data->name);
+            printf("PHONE: %s\n", result->data->phone);
+            printf("EMAIL: %s\n", result->data->email);
         }
         printf(
-            "[1] Continue Search\t[0] Exit\n");
+            "\n[1] Continue Search\t[0] Exit\n");
         printf("Choice: ");
         scanf("%d", &exit_choice);
     } while (exit_choice);
