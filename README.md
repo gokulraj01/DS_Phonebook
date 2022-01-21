@@ -1,6 +1,24 @@
 # Basic Phonebook
 Basic implementation of a Phonebook in C language.
 
+## Features
+ - ### **Highly Tweakable**
+    - **PhoneBook Format:** Can easily switch between CSV/TSV formats. Support for custom delimiters.
+    - **Search Methods:** Can perform specific and lazy searches.
+    - Memory Usage per Contact, UI Screens etc are easily modifiable as per end use.
+- ### **Dynamic Memory Allocation**
+    Application uses only as much memory as needed by selected PhoneBook. 
+
+- ### **Partial Search Feature**
+    Partial search queries are supported for easy navigation.
+
+- ### **Interactive UI**
+    Plain Text interactive UI focusing visibility and ease of use for a clutter free experience.
+
+- ### **Machine/Human Readable PhoneBook Files**
+    CSV/TSV Phonebook files are easily parseable whilst remaining accessible for manual edits
+
+
 ## How to test/run
 1. Clone this repo using command below or or download and extract `DS_Phonebook-main.zip` using Code button above.
     ```
@@ -8,7 +26,7 @@ Basic implementation of a Phonebook in C language.
     ```
 2. Move into parent directory and with GCC installed, execute `run.bat` for Windows or `run.sh` for Linux.
 
-<hr>
+--------------------
 
 ## Problem Statement
 <table>
@@ -26,18 +44,12 @@ Basic implementation of a Phonebook in C language.
 </tr>
 </table>
 
+----
 
-
-<table>
-    <tr>
-        <th>Project Team Members
-    </tr>
-    <tr>
-        <td>
-        <li>233 - George P Zacharia</li>
-        <li>234 - Gokul PS</li>
-        <li>235 - Gokul Raj</li>
-        <li>236 - Greeshma Biju R</li>
-        </td>
-    </tr>
-</table>
+## Development team
+|#|Team Member|
+|:-:|:----:|
+|233|George P Zakaria|
+|234|Gokul P. S.|
+|235|Gokul Raj|
+|236|Greeshma Biju R|
