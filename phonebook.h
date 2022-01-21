@@ -60,11 +60,13 @@ char *input(char *msg) {
  * @param list HEAD of linked list holding ContactList
  */
 void displayAllContacts(struct Node *list) {
+    clrscr();
     struct Node *current = list;
     int iter = 0;
-    printf("Name\t\t\tPhone\t\tEmail\n");
+    printf("   Name\t\t|\t   Phone\t|\t   Email\n");
+    printf("   ----\t\t|\t   -----\t|\t   -----\n");
     while (current != NULL) {
-        printf("%s\t\t%s\t%s\n", current->data->name, current->data->phone,
+        printf("%s\t|\t%s\t|\t%s\n", current->data->name, current->data->phone,
                current->data->email);
         current = current->next;
         iter++;
@@ -110,49 +112,32 @@ void deleteContact(struct Node *node) {
     }
 }
 
-// Function to search by name
-struct Node *nameSearch(char *key, struct Node *list) {
-    struct Node *current = list;
-    while (current != NULL) {
-        if (strcmp(current->data->name, key) == 0)
-            return current;
-        current = current->next;
-    }
-    return NULL;
-}
-
-// Function to search by phone number
-struct Node *phnoSearch(char *key, struct Node *list) {
-    struct Node *current = list;
-    while (current != NULL) {
-        if (strcmp(current->data->phone, key) ==
-            0) // strcmp returns 0 if strings are same
-            return current;
-        current = current->next;
-    }
-    return NULL;
-}
-
 struct Node *searchContact() {
+    clrscr();
     int choice;
-    printf("To search by name press 1\n"
-           "To search by phone number press 2\n"
+    printf("Search Modes\n"
+           "[1] By Name\t[2] By PhoneNo\t[3] By Email\n"
            "Enter your choice: ");
     scanf("%d", &choice);
-    struct Node *namesrch;
     char *key;
+    struct Node *result;
     switch (choice) {
     case 1:
-        key = input("Enter the name to be searched");
-        namesrch = nameSearch(key, contactList);
+        key = input("Enter Name to search: ");
+        for(result=contactList; (strcmp(result->data->name, key) != 0 && result != NULL); result=result->next);
         break;
     case 2:
-        key = input("Enter the phone number to be searched");
-        namesrch = phnoSearch(key, contactList);
+        key = input("Enter PhoneNo to search: ");
+        for(result=contactList; strcmp(result->data->phone, key) != 0 && result != NULL; result=result->next);
         break;
+    case 3:
+        key = input("Enter Email to search: ");
+        for(result=contactList; strcmp(result->data->email, key) != 0 && result != NULL; result=result->next);
+        break;
+    default:
+        result = NULL;
     }
-
-    return namesrch;
+    return result;
 }
 
 /** Parser to import formatted (CSV/TSV) PhoneBook files to memory as
@@ -206,17 +191,24 @@ void showCredits() {
     clrscr();
 }
 
-void writePhonebook() {
-    // TODO: write out phonebook data from memory to file (filename is value of
-    // PHONEBOOK_NAME) Pending - Greeshma
-    printf("Phonebook saved to %s", PHONEBOOK_NAME);
+/** Writes ContactList to a formatted (CSV/TSV) PhoneBook file.
+ * This function OVERWRITES the specified PhoneBook file.
+ * @param filename Phonebook file to write into
+ */
+void writePhonebook(char *filename) {
+    FILE *pb = fopen(filename, "w");
+    for(struct Node *p = contactList; p != NULL; p = p->next){
+        fprintf(pb, "%s%c%s%c%s%c", p->data->name, ITEM_DELIMITER, p->data->phone, ITEM_DELIMITER, p->data->email, CONTACT_DELIMITER);
+    }
+    fclose(pb);
+    printf("Phonebook saved to %s", filename);
 }
 
 // Writes ContactList to PhoneBook file and exits.
 void userExit() {
     clrscr();
     printf("Exitting Phonebook.....\n");
-    writePhonebook();
+    // writePhonebook(PHONEBOOK_NAME);
     return;
 }
 
@@ -282,21 +274,21 @@ void userSortContact() {
 void userSearchContact() {
     int exit_choice;
     do {
-        struct Node *namesrch;
-        namesrch = searchContact();
-        if (namesrch == NULL)
+        struct Node *result;
+        result = searchContact();
+        if (result == NULL)
             printf("No results..");
         else {
-            printf("Details of searched employee\n");
-            printf("Name: %s\n", namesrch->data->name);
-            printf("Phone number: %s\n", namesrch->data->phone);
-            printf("Email: %s\n", namesrch->data->email);
+            printf("Result\n");
+            printf("Name: %s\n", result->data->name);
+            printf("Phone number: %s\n", result->data->phone);
+            printf("Email: %s\n", result->data->email);
         }
         printf(
-            "Press 1 to continue searching. Press any other number to exit\n");
-        printf("Enter your choice: ");
+            "[1] Continue Search\t[0] Exit\n");
+        printf("Choice: ");
         scanf("%d", &exit_choice);
-    } while (exit_choice == 1);
+    } while (exit_choice);
 }
 
 // Displays a Interactive Menu to interface with PhoneBook functions
