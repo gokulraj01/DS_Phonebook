@@ -259,7 +259,7 @@ void writePhonebook(char *filename) {
 void userExit() {
     clrscr();
     printf("Exitting Phonebook.....\n");
-    // writePhonebook(PHONEBOOK_NAME);
+    writePhonebook(PHONEBOOK_NAME);
     return;
 }
 
