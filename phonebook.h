@@ -12,6 +12,7 @@
 #define clrscr() printf("\e[1;1H\e[2J") //  Macro Function to Clear Screen
 #define MENU "screens/menu.txt"         //  Location of Menu Screen
 #define STR_FIND_MODE 0                   //  Search Mode for strfind
+#define SEARCH "screens/Search_Menu.txt"    //  Location of Search Screen
 
 // Structure to hold contact data
 struct Contact {
@@ -142,9 +143,7 @@ struct Node *searchContact() {
     clrscr();
     int choice, n = 2;
     struct Node *p, *result;
-    printf("Search Modes\n"
-           "[1] By Name\t[2] By PhoneNo\t[3] By Email\n"
-           "Enter your choice: ");
+    printFile(SEARCH);
     scanf("%d", &choice);
     while(n > 1){
         char *str;
