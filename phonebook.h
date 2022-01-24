@@ -103,14 +103,12 @@ void printFile(char *filename) {
 void displayAllContacts(struct Node *list) {
     clrscr();
     struct Node *current = list;
-    int iter = 0;
     printf("   Name\t\t|\t   Phone\t|\t   Email\n");
     printf("   ----\t\t|\t   -----\t|\t   -----\n");
     while (current != NULL) {
         printf("%s\t|\t%s\t|\t%s\n", current->data->name, current->data->phone,
                current->data->email);
         current = current->next;
-        iter++;
     }
     printf("\n");
 }
@@ -154,6 +152,8 @@ void deleteContact(struct Node *node) {
         node->prev->next = node->next;
         node->next->prev = node->prev;
     }
+    free(node->data);
+    free(node);
 }
 
 /** Perform a search query on ContactList with UI for partial matching.
