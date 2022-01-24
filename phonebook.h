@@ -11,8 +11,8 @@
 #define CREDIT_DURATION 1               //  Duration of Credit Splash Screen
 #define clrscr() printf("\e[1;1H\e[2J") //  Macro Function to Clear Screen
 #define MENU "screens/menu.txt"         //  Location of Menu Screen
-#define STR_FIND_MODE 0                   //  Search Mode for strfind
-#define SEARCH "screens/Search_Menu.txt"    //  Location of Search Screen
+#define STR_FIND_MODE 0                 //  Search Mode for strfind
+#define SEARCH "screens/search.txt"     //  Location of Search Screen
 
 // Structure to hold contact data
 struct Contact {
@@ -83,6 +83,20 @@ int strfind(char *str, char *key, int mode){
     return 0;
 }
 
+/** Convenience function to display a file content as is to console
+ * @param filename Path to file to be displayed
+ */
+void printFile(char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (f == NULL) {
+        printf("Internal Error: Unable to open Screen File\n");
+        return;
+    }
+    while (!feof(f))
+        fputc(fgetc(f), stdout);
+    fclose(f);
+}
+
 /** Dumps passed ContactList data formatted as a table to console.
  * @param list HEAD of linked list holding ContactList
  */
@@ -126,6 +140,9 @@ void addContact(char *name, char *phone, char *email) {
     contactListEnd = newNode;
 }
 
+/** Deletes a contact from ContactList
+ * @param node Pointer to node of contact to be deleted.
+ */
 void deleteContact(struct Node *node) {
     if (node->prev == NULL) { // node is at beginning
         node->next->prev = NULL;
@@ -139,17 +156,22 @@ void deleteContact(struct Node *node) {
     }
 }
 
+/** Perform a search query on ContactList with UI for partial matching.
+ * Returns when only one match is found.
+ */
 struct Node *searchContact() {
     clrscr();
     int choice, n = 2;
     struct Node *p, *result;
     printFile(SEARCH);
     scanf("%d", &choice);
+    // Repeat search until only one result is obtained.
     while(n > 1){
         char *str;
         char *key = input("Query");
         printf("MATCHES: ");
         n = 0;
+        // Perform search on data selected by user.
         switch (choice) {
             case 1:
                 for(p=contactList; p != NULL; p=p->next){
@@ -184,6 +206,7 @@ struct Node *searchContact() {
         }
         printf("\nFound %d matches...\n", n);
     }
+    // Return node if unique result obtained, else return NULL for not found.
     if(n == 1)
         return result;
     else
@@ -219,20 +242,6 @@ void parsePhonebook(char *filename) {
     fclose(pb);
 }
 
-/** Internal method to display a file content as is to console
- * @param filename Path to file to be displayed
- */
-void printFile(char *filename) {
-    FILE *f = fopen(filename, "r");
-    if (f == NULL) {
-        printf("Internal Error: Unable to open Screen File\n");
-        return;
-    }
-    while (!feof(f))
-        fputc(fgetc(f), stdout);
-    fclose(f);
-}
-
 // Displays credits splash screen
 void showCredits() {
     clrscr();
@@ -257,7 +266,7 @@ void writePhonebook(char *filename) {
 // Writes ContactList to PhoneBook file and exits.
 void userExit() {
     clrscr();
-    printf("Exitting Phonebook.....\n");
+    printf("Exiting Phonebook.....\n");
     writePhonebook(PHONEBOOK_NAME);
     return;
 }
@@ -265,19 +274,13 @@ void userExit() {
 // Waits for user interaction before continuing
 void waitKey() {
     printf("Press 'Enter' for Menu.....");
-    char c = '\0';
-    while (c == '\0') {
-        fflush(stdin);
-        scanf("%c", &c);
-        if (c == '\n') {
-            clrscr();
-            return;
-        }
-    }
+    fflush(stdin);
+    getc(stdin);
+    clrscr();
 }
 
 // Takes user input to create a new contact.
-// Implements addContact()
+// Implements addContact function
 void userAddContact() {
     clrscr();
     char *name, *phone, *email;
@@ -290,6 +293,7 @@ void userAddContact() {
     printf("Contact added successfully....\n");
 }
 
+// User function for deleting contact with UI
 void userDeleteContact() {
     struct Node *result = searchContact();
     if (result == NULL) {
@@ -310,6 +314,7 @@ void userDeleteContact() {
     }
 }
 
+// User function for modifying contact with UI
 void userModifyContact() {
     struct Node *result = searchContact();
     int edit = 1;
@@ -365,6 +370,7 @@ void userSortContact() {
     printf("Sort Done...\n");
 }
 
+// User function for searching a contact with UI
 void userSearchContact() {
     int exit_choice;
     do {
