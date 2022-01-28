@@ -126,4 +126,5 @@
         2. Call corresponding function from userAddContact, userDeleteContact, userModifyContact, userSortContact, userSearchContact, displayAllContacts, userExit
 
 -  ## `main()`
+    1. Call parsePhonebook with location of phonebook file as parameter.
     1. Call showMenu

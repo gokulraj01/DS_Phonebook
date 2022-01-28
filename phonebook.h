@@ -394,7 +394,6 @@ void userSearchContact() {
 
 // Displays a Interactive Menu to interface with PhoneBook functions
 void showMenu() {
-    parsePhonebook(PHONEBOOK_NAME);
     while (1) {
         printFile(MENU);
         char choice = -1;

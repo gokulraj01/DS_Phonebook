@@ -20,11 +20,25 @@ Basic implementation of a Phonebook in C language.
 
 
 ## How to test/run
-1. Clone this repo using command below or or download and extract `DS_Phonebook-main.zip` using Code button above.
-    ```
+1. Clone this repo using command below or download main branch archive `DS_Phonebook-main.zip`
+    ```sh
     git clone https://github.com/rogue-geek/DS_Phonebook.git
     ```
-2. Move into parent directory and with GCC installed, execute `run.bat` for Windows or `run.sh` for Linux.
+2. Check for GCC using `gcc` command:
+    ```sh
+    gcc
+    ```
+    You should see some output like so. Else, install gcc for your platform.
+    ```
+    gcc: fatal error: no input files
+    compilation terminated. 
+    ```
+3. Move into project folder. Execute appropriate run script.
+    ```sh
+    .\run.bat      # Powershell and Command Prompt (Windows)
+
+    ./run.sh       # Linux Terminal
+    ```
 
 --------------------
 
@@ -32,7 +46,7 @@ Basic implementation of a Phonebook in C language.
 <table>
 <tr>
     <td><img src="qn.jpeg"></td>
-    <td>
+    <td style="padding-left: 20px">
         Implement a phone book which stores name, phone number and email-id. Include the following features in your phone book.
         <li>Add new record</li>
         <li>Delete record</li>
